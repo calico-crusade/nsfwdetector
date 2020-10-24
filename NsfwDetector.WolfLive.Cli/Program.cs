@@ -1,8 +1,6 @@
 ﻿using CardboardBox.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Diagnostics;
-using System.Threading;
 using System.Threading.Tasks;
 using WolfLive.Api;
 using WolfLive.Api.Commands;
@@ -18,8 +16,6 @@ namespace NsfwDetector.WolfLive.Cli
 	{
 		public static async Task Main(string[] args)
 		{
-			StartNodeServer();
-
 			var client = new WolfClient()
 				.SetupCommands()
 				.WithConfig("appsettings.json")
@@ -62,33 +58,6 @@ namespace NsfwDetector.WolfLive.Cli
 			Console.WriteLine("Login success! Logged in as: " + client.CurrentUser().Nickname);
 
 			await Task.Delay(-1);
-		}
-
-		public static void StartNodeServer()
-		{
-			new Thread(() =>
-			{
-				var process = new Process
-				{
-					StartInfo = new ProcessStartInfo
-					{
-						FileName = @"C:\Program Files\nodejs\node.exe",
-						WorkingDirectory = "..\\..\\..\\..\\NsfwDetector.Express\\",
-						//WindowStyle = ProcessWindowStyle.Hidden,
-						Arguments = "app.js",
-						UseShellExecute = false,
-						RedirectStandardOutput = true,
-						CreateNoWindow = true
-					}
-				};
-
-				process.Start();
-
-				while(!process.StandardOutput.EndOfStream)
-				{
-					Console.WriteLine($"NODE SERVER: {process.StandardOutput.ReadLine()}");
-				}
-			}).Start();
 		}
 
 		private static void Client_OnReconnected(IWolfClient client, int reconnectionCount)
